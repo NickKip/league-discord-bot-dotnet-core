@@ -5,6 +5,7 @@ using Discord;
 using Discord.WebSocket;
 using System.IO;
 using System.Text;
+using LeagueBot.Bot;
 using LeagueBot.Config;
 using LeagueBot.Logger;
 
@@ -12,9 +13,8 @@ namespace LeagueBot
 {
     public class Program
     {
-        private static BotConfig BotConfig { get; set; } 
-
-        private DiscordSocketClient _client;
+        private static BotConfig BotConfig { get; set; }
+        private LeagueBot.Bot.Bot Bot;
 
         public static void Main(string[] args)
             => new Program().MainAsync(args).GetAwaiter().GetResult();
@@ -26,26 +26,10 @@ namespace LeagueBot
             else
                 this.ReadConfig("dev");
 
-            BotLogger.Log($"League Bot Version: {BotConfig.Version}");
+            BotLogger.Log($"League Bot Config Loaded, Name: {BotConfig.ConfigName} - Version: {BotConfig.Version}");
 
-            DiscordSocketConfig config = new DiscordSocketConfig {
-
-                LogLevel = LogSeverity.Info,
-                MessageCacheSize = 5
-            };
-
-            _client = new DiscordSocketClient(config);
-            _client.Log += Log;
-
-            string token = "";
-            await _client.LoginAsync(TokenType.Bot, token);
-            await _client.StartAsync();
-
-            _client.Ready += () => {
-
-                BotLogger.Log("League Bot Connected!");
-                return Task.CompletedTask;
-            };
+            this.Bot = new LeagueBot.Bot.Bot(BotConfig);
+            await this.Bot.Login();
 
             await Task.Delay(-1);
         }
@@ -62,12 +46,6 @@ namespace LeagueBot
 
             // Handle Bindings
             BotLogger.BotConfig = BotConfig;
-        }
-
-        private Task Log(LogMessage msg)
-        {
-            BotLogger.Log(msg.ToString());
-            return Task.CompletedTask;
         }
     }
 }
