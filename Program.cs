@@ -21,7 +21,10 @@ namespace LeagueBot
 
         public async Task MainAsync(string[] args)
         {
-            this.ReadConfig("dev");
+            if (args != null)
+                this.ReadConfig(args[0]);
+            else
+                this.ReadConfig("dev");
 
             BotLogger.Log($"League Bot Version: {BotConfig.Version}");
 
@@ -49,12 +52,9 @@ namespace LeagueBot
 
         private void ReadConfig(string env)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("config.{0}.json", env);
-
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(sb.ToString());
+                .AddJsonFile($"config.{env}.json");
 
             var config = builder.Build();
 
