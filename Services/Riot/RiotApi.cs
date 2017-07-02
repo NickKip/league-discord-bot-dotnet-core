@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LeagueBot.Config;
 using LeagueBot.Logger;
 using LeagueBot.Services.Riot.Matches;
+using LeagueBot.Services.Riot.Summoner;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -59,6 +60,22 @@ namespace LeagueBot.Services.Riot
         }
 
         // === Public Methods === //
+
+        public async Task<SummonerAccount> GetSummonerByName(string summonerName)
+        {
+            try
+            {
+                string requestResult = await this.HttpRequest($"{Protocol}{Region}{SummonerV3}{summonerName}");
+
+                SummonerAccount summonerData = JsonConvert.DeserializeObject<SummonerAccount>(requestResult);
+                return summonerData;
+            }
+            catch (Exception ex)
+            {
+                BotLogger.Log(ex.ToString());
+                return default(SummonerAccount);
+            }
+        }
 
         public async Task<Dictionary<int, string>> GetChampions()
         {

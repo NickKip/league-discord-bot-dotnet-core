@@ -6,6 +6,7 @@ using LeagueBot.Entities.LeagueGame;
 using LeagueBot.Entities.Subscription;
 using LeagueBot.Logger;
 using LeagueBot.Services.Riot;
+using LeagueBot.Services.Riot.Summoner;
 
 namespace LeagueBot.Commands.Modules
 {
@@ -23,8 +24,10 @@ namespace LeagueBot.Commands.Modules
 
         // === Constructor === //
 
-        public Registration()
+        public Registration(RiotService riotService, Stopwatch stopwatch)
         {
+            this._riot = riotService;
+            this._stopwatch = stopwatch;
             this.Games = new Dictionary<string, LeagueStats>();
             this.Subscriptions = new Dictionary<string, Subscription>();
         }
@@ -36,22 +39,22 @@ namespace LeagueBot.Commands.Modules
         {
             BotLogger.Log($"Summoner name: {summonerName}");
 
-            LeagueStats existing;
-
-            if (this.Games.TryGetValue(summonerName, out existing) == false)
-            {
-                this.Games.Add(summonerName, new LeagueStats { LastGameId = 0, Games = new List<LeagueGame>() });
-            }
-
             Subscription subscription;
 
             if (this.Subscriptions.TryGetValue(Context.Client.CurrentUser.Username, out subscription) == false)
             {
-                long summonerId = this._riot.GetSummonerId(summonerName);
+                SummonerAccount summoner = await this._riot.GetSummonerByName(summonerName);
 
-                if (summonerId != 0)
+                if (summoner != null)
                 {
-                    this.Subscriptions.Add(Context.Client.CurrentUser.Username, new Subscription { SummonerId = summonerId, SummonerName = summonerName });
+                    LeagueStats existing;
+
+                    if (this.Games.TryGetValue(summonerName, out existing) == false)
+                    {
+                        this.Games.Add(summonerName, new LeagueStats { LastGameId = 0, Games = new List<LeagueGame>() });
+                    }
+
+                    this.Subscriptions.Add(Context.Client.CurrentUser.Username, new Subscription { SummonerId = summoner.Id, SummonerName = summonerName });
 
                     await ReplyAsync($"Summoner: `{summonerName}` has been successfully registered. You will now receive updates on their live games!");
                 }
