@@ -2,6 +2,9 @@
     "Bot": {
         "Token": "",
         "Version": "0.0.1",
-        "Logging": true
+        "Logging": true,
+
+        "RiotKey": "",
+        "Region": ""
     }
 }

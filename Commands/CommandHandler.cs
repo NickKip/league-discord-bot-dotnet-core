@@ -1,9 +1,12 @@
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
+using LeagueBot.Config;
 using LeagueBot.Logger;
+using LeagueBot.Services.Riot;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LeagueBot.Commands
@@ -14,12 +17,17 @@ namespace LeagueBot.Commands
         private DiscordSocketClient _client;
         private IServiceProvider _services;
 
-        public async Task Install(DiscordSocketClient client)
+        public async Task Install(DiscordSocketClient client, BotConfig config)
         {
             this._client = client;
             this._commands = new CommandService();
 
-            _services = new ServiceCollection().BuildServiceProvider();
+            // Inject Module Services
+
+            _services = new ServiceCollection()
+                .AddSingleton(new RiotService(config))
+                .AddSingleton(new Stopwatch())
+                .BuildServiceProvider();
 
             _client.MessageReceived += HandleCommand;
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());

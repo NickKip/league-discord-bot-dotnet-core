@@ -35,7 +35,7 @@ namespace LeagueBot.Bot
             _client.Log += Log;
             _commands = new CommandHandler();
 
-            await _commands.Install(_client);
+            await _commands.Install(_client, Config);
 
             await _client.LoginAsync(TokenType.Bot, Config.Token);
             await _client.StartAsync();
