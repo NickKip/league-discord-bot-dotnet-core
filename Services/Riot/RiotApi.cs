@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LeagueBot.Config;
 using LeagueBot.Logger;
 using LeagueBot.Services.Riot.Matches;
+using LeagueBot.Services.Riot.Spectator;
 using LeagueBot.Services.Riot.Summoner;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -14,7 +15,7 @@ namespace LeagueBot.Services.Riot
 {
     public class RiotService
     {
-        private BotConfig config;
+        private BotConfig Config;
 
         // === Riot Api Details === //
 
@@ -35,7 +36,7 @@ namespace LeagueBot.Services.Riot
 
         public RiotService(BotConfig config)
         {
-            this.config = config;
+            this.Config = config;
             this.ApiKey = config.RiotKey;
             this.Region = config.Region;
         }
@@ -117,5 +118,21 @@ namespace LeagueBot.Services.Riot
             }
         }
 
+        public async Task<SpectatorV3> IsInGame(int summonerId)
+        {
+            try
+            {
+                string requestResult = await this.HttpRequest($"{Protocol}{Region}{SpectatorV3}{summonerId}");
+
+                SpectatorV3 spectator = JsonConvert.DeserializeObject<SpectatorV3>(requestResult);
+
+                return spectator;
+            }
+            catch (Exception ex)
+            {
+                BotLogger.Log(ex.ToString());
+                return default(SpectatorV3);
+            }
+        }
     }
 }

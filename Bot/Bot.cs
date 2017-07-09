@@ -6,22 +6,29 @@ using Discord.WebSocket;
 using LeagueBot.Commands;
 using LeagueBot.Config;
 using LeagueBot.Logger;
+using LeagueBot.Services.LiveGame;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LeagueBot.Bot 
 {
     public class Bot
     {
-        private BotConfig Config;
+        // === Private === //
 
+        private BotConfig Config;
         private CommandHandler _commands;
         private DiscordSocketClient _client;
-        private IServiceProvider _services;
+        private LiveGameService _liveService;
+
+        // === Constructor === //
 
         public Bot(BotConfig config)
         {
             this.Config = config;
+            this._liveService = new LiveGameService(this.Config);
         }
+
+        // === Public Methods === //
 
         public async Task Login()
         {
@@ -40,6 +47,8 @@ namespace LeagueBot.Bot
             await _client.LoginAsync(TokenType.Bot, Config.Token);
             await _client.StartAsync();
 
+            _client.GuildMemberUpdated += UserUpdated;
+
             _client.Ready += () => {
 
                 BotLogger.Log("League Bot Connected!");
@@ -47,9 +56,21 @@ namespace LeagueBot.Bot
             };
         }
 
+        // === Private Methods === //
+
         private Task Log(LogMessage msg)
         {
             BotLogger.Log(msg.ToString());
+            return Task.CompletedTask;
+        }
+
+        private Task UserUpdated(SocketUser previousStatus, SocketUser currentStatus)
+        {
+            BotLogger.Log($"User update!");
+
+            if (currentStatus.Game != null)
+                BotLogger.Log($"Game update: {currentStatus.Game.Value}");
+
             return Task.CompletedTask;
         }
     }

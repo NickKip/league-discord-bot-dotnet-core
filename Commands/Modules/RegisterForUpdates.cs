@@ -34,8 +34,8 @@ namespace LeagueBot.Commands.Modules
 
         // === Commands === //
 
-        [Command("register"), Summary("Echos a message.")]
-        public async Task Register([Summary("The summoner name you wish to track.")] string summonerName)
+        [Command("register"), Summary("Registers your summoner name.")]
+        public async Task Register([Summary("Your summoner name.")] string summonerName)
         {
             BotLogger.Log($"Summoner name: {summonerName}");
 
@@ -50,13 +50,11 @@ namespace LeagueBot.Commands.Modules
                     LeagueStats existing;
 
                     if (this.Games.TryGetValue(summonerName, out existing) == false)
-                    {
                         this.Games.Add(summonerName, new LeagueStats { LastGameId = 0, Games = new List<LeagueGame>() });
-                    }
 
                     this.Subscriptions.Add(Context.Client.CurrentUser.Username, new Subscription { SummonerId = summoner.Id, SummonerName = summonerName });
 
-                    await ReplyAsync($"Summoner: `{summonerName}` has been successfully registered. You will now receive updates on their live games!");
+                    await ReplyAsync($"Summoner: `{summonerName}` has been successfully registered. You will now receive updates when you enter games!");
                 }
                 else
                     await ReplyAsync($"Summoner: `{summonerName}` was not found. Please try again.");

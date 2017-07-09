@@ -5,7 +5,7 @@ namespace LeagueBot.Entities.LeagueGame
     public class LeagueStats
     {
         public long                 LastGameId          { get; set; }
-        public IList<LeagueGame>     Games               { get; set; }
+        public IList<LeagueGame>    Games               { get; set; }
     }
 
     public class LeagueGame
