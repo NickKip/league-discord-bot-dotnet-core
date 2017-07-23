@@ -7,6 +7,8 @@ using LeagueBot.Commands;
 using LeagueBot.Config;
 using LeagueBot.Logger;
 using LeagueBot.Services.LiveGame;
+using LeagueBot.Services.ResponseFormatter;
+using LeagueBot.Services.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LeagueBot.Bot 
@@ -19,13 +21,16 @@ namespace LeagueBot.Bot
         private CommandHandler _commands;
         private DiscordSocketClient _client;
         private LiveGameService _liveService;
+        private ResponseFormatterService _formatter;
+        private StorageService _storage;
 
         // === Constructor === //
 
-        public Bot(BotConfig config)
+        public Bot(BotConfig config, StorageService storage)
         {
             this.Config = config;
             this._liveService = new LiveGameService(this.Config);
+            this._storage = storage;
         }
 
         // === Public Methods === //
@@ -41,8 +46,9 @@ namespace LeagueBot.Bot
             _client = new DiscordSocketClient(config);
             _client.Log += Log;
             _commands = new CommandHandler();
+            _formatter = new ResponseFormatterService();
 
-            await _commands.Install(_client, Config);
+            await _commands.Install(_client, _storage, Config);
 
             await _client.LoginAsync(TokenType.Bot, Config.Token);
             await _client.StartAsync();
@@ -64,14 +70,34 @@ namespace LeagueBot.Bot
             return Task.CompletedTask;
         }
 
-        private Task UserUpdated(SocketUser previousStatus, SocketUser currentStatus)
+        private async Task UserUpdated(SocketUser previousStatus, SocketUser currentStatus)
         {
             BotLogger.Log($"User update!");
 
-            if (currentStatus.Game != null)
+            if (currentStatus.Game != null) 
+            {
                 BotLogger.Log($"Game update: {currentStatus.Game.Value}");
 
-            return Task.CompletedTask;
+                // Todo: remove magic string
+                if (currentStatus.Game.Value.ToString() == "League of Legends")
+                {
+                    string currentUser = currentStatus.Username;
+
+                    var sub = this._storage.GetSubscriptionsFromKey(currentUser);
+
+                    if (sub != null)
+                    {
+                        var game = await this._liveService.GetCurrentGame(sub.SummonerId, sub.SummonerName);
+
+                        var channel = await currentStatus.CreateDMChannelAsync();
+                        await channel.SendMessageAsync(this._formatter.FormatGameResponse(game));
+                    }
+                    else
+                    {
+                        BotLogger.Log("No subscription found.");
+                    }
+                }
+            }
         }
     }
 }

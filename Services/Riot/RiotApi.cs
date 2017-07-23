@@ -118,7 +118,7 @@ namespace LeagueBot.Services.Riot
             }
         }
 
-        public async Task<SpectatorV3> IsInGame(int summonerId)
+        public async Task<SpectatorV3> IsInGame(long summonerId)
         {
             try
             {

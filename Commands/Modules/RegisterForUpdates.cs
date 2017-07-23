@@ -7,6 +7,7 @@ using LeagueBot.Entities.Subscription;
 using LeagueBot.Logger;
 using LeagueBot.Services.Riot;
 using LeagueBot.Services.Riot.Summoner;
+using LeagueBot.Services.Storage;
 
 namespace LeagueBot.Commands.Modules
 {
@@ -16,6 +17,7 @@ namespace LeagueBot.Commands.Modules
 
         private RiotService _riot;
         private Stopwatch _stopwatch;
+        private StorageService _storage;
 
         // === Private Props === //
 
@@ -24,10 +26,11 @@ namespace LeagueBot.Commands.Modules
 
         // === Constructor === //
 
-        public Registration(RiotService riotService, Stopwatch stopwatch)
+        public Registration(RiotService riotService, Stopwatch stopwatch, StorageService storage)
         {
             this._riot = riotService;
             this._stopwatch = stopwatch;
+            this._storage = storage;
             this.Games = new Dictionary<string, LeagueStats>();
             this.Subscriptions = new Dictionary<string, Subscription>();
         }
@@ -41,7 +44,7 @@ namespace LeagueBot.Commands.Modules
 
             Subscription subscription;
 
-            if (this.Subscriptions.TryGetValue(Context.Client.CurrentUser.Username, out subscription) == false)
+            if (this.Subscriptions.TryGetValue(Context.Message.Author.Username, out subscription) == false)
             {
                 SummonerAccount summoner = await this._riot.GetSummonerByName(summonerName);
 
@@ -52,7 +55,10 @@ namespace LeagueBot.Commands.Modules
                     if (this.Games.TryGetValue(summonerName, out existing) == false)
                         this.Games.Add(summonerName, new LeagueStats { LastGameId = 0, Games = new List<LeagueGame>() });
 
-                    this.Subscriptions.Add(Context.Client.CurrentUser.Username, new Subscription { SummonerId = summoner.Id, SummonerName = summonerName });
+                    this.Subscriptions.Add(Context.Message.Author.Username, new Subscription { SummonerId = summoner.Id, SummonerName = summonerName });
+
+                    // Persist
+                    this._storage.SaveSubscriptions(this.Subscriptions);
 
                     await ReplyAsync($"Summoner: `{summonerName}` has been successfully registered. You will now receive updates when you enter games!");
                 }

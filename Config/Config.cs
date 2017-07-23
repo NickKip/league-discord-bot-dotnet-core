@@ -8,8 +8,9 @@ namespace LeagueBot.Config
         public string Version { get; set; }
         public string Token { get; set; }
         public bool Logging { get; set; }
+        public bool TestCommands { get; set; }
 
-        // === League Config === // 
+        // === League Config === //
 
         public string LeagueGameName { get; set; }
         public string RiotKey { get; set; }

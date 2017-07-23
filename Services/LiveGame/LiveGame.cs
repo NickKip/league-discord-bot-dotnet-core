@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using HtmlAgilityPack.CssSelectors.NetCore;
 using LeagueBot.Config;
 using LeagueBot.Entities.LeagueGame;
+using LeagueBot.Logger;
 using LeagueBot.Services.LolSkill;
 using LeagueBot.Services.Riot;
 using LeagueBot.Services.Riot.Participant;
@@ -31,7 +34,7 @@ namespace LeagueBot.Services.LiveGame
 
         // === Public Methods === //
 
-        public async Task<LeagueGame> GetCurrentGame(int summonerId, string summonerName)
+        public async Task<LeagueGame> GetCurrentGame(long summonerId, string summonerName)
         {
             if (this.ChampionMap == null)
                 this.ChampionMap = await this._riot.GetChampions();
@@ -51,14 +54,28 @@ namespace LeagueBot.Services.LiveGame
 
                     summIds.Add(p.SummonerId);
 
+                    // Todo: wrap this in some safety
+                    int champScore = 0;
+                    string champPerf = "0";
+
+                    try
+                    {
+                        champScore = Convert.ToInt32(lolSkill.QuerySelector($"div[data-summoner-id=\"{p.SummonerId}\"] div .skillscore").InnerHtml.Replace(",", ""));
+                        champPerf = lolSkill.QuerySelector($"div[data-summoner-id=\"{p.SummonerId}\"] .stats .stat").InnerHtml;
+                    }
+                    catch (Exception ex)
+                    {
+                        BotLogger.Log($"Failed to get champScore or champPerf: {ex.ToString()}");
+                    }
+
                     SummonersInGame summ = new SummonersInGame
                     {
                         Name = p.SummonerName,
                         Id = p.SummonerId,
                         Champion = this.ChampionMap[p.ChampionId],
                         Team = p.TeamId,
-                        ChampScore = 0,
-                        ChampPerf = "",
+                        ChampScore = champScore,
+                        ChampPerf = champPerf,
                         Rank = "",
                         Wins = 0,
                         Losses = 0,
@@ -66,11 +83,32 @@ namespace LeagueBot.Services.LiveGame
                     };
 
                     return summ;
-                });
+                }).OrderByDescending(s => s.ChampScore);
 
-                // TODO: finish this...
+                // Todo: get ranked info for each summoner ... do we need to query riot for this?
+                // Yes we should
 
-                return null;
+                string winChance = "";
+
+                try
+                {
+                    winChance = lolSkill.QuerySelector($"div.team-{teamId} .winchance .tooltip").InnerHtml;
+                }
+                catch (Exception ex)
+                {
+                    BotLogger.Log($"Failed to get winChance: {ex.ToString()}");
+                }
+
+                LeagueGame leagueGame = new LeagueGame
+                {
+                    GameId = game.GameId,
+                    GameTypeId = game.GameQueueConfigId,
+                    WinChance = winChance,
+                    Summoners = summonersInGame,
+                    IsFinished = false
+                };
+
+                return leagueGame;
             }
             else
             {

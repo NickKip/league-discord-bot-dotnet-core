@@ -8,6 +8,7 @@ using System.Text;
 using LeagueBot.Bot;
 using LeagueBot.Config;
 using LeagueBot.Logger;
+using LeagueBot.Services.Storage;
 
 namespace LeagueBot
 {
@@ -28,7 +29,9 @@ namespace LeagueBot
 
             BotLogger.Log($"League Bot Config Loaded, Name: {BotConfig.ConfigName} - Version: {BotConfig.Version}");
 
-            this.Bot = new LeagueBot.Bot.Bot(BotConfig);
+            StorageService storage = new StorageService();
+
+            this.Bot = new LeagueBot.Bot.Bot(BotConfig, storage);
             await this.Bot.Login();
 
             await Task.Delay(-1);
