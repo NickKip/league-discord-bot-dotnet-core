@@ -1,5 +1,8 @@
 *.DS_Store
-/bin
-/obj
-config.nk.json
-/.vscode
+BotConsole/bin
+BotConsole/obj
+BotWeb/bin
+BotWeb/obj
+DiscordBot/bin
+DiscordBot/obj
+Config/config.nk.json

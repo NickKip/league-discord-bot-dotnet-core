@@ -1,0 +1,11 @@
+{
+    "Bot": {
+        "Token": "",
+        "Version": "0.0.1",
+        "Logging": true,
+        "TestCommands": true,
+
+        "RiotKey": "",
+        "Region": ""
+    }
+}
