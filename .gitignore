@@ -3,6 +3,7 @@ BotConsole/bin
 BotConsole/obj
 BotWeb/bin
 BotWeb/obj
+BotWeb/Config/*
 DiscordBot/bin
 DiscordBot/obj
 Config/config.nk.json

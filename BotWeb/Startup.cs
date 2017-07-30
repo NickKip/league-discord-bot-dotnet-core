@@ -1,17 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using LeagueBot.Bot;
+using LeagueBot.Bot.Events;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 
 namespace BotWeb
 {
     public class Startup
     {
+        // === Private === //
+
+        private Bot Bot;
+        private WebSocket WebSocket;
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -20,6 +32,10 @@ namespace BotWeb
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            this.Bot = new Bot("nk");
+            this.Bot.GameFinished += this.GameUpdate;
+            this.Bot.Login();
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -47,6 +63,7 @@ namespace BotWeb
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseWebSockets();
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
@@ -55,6 +72,48 @@ namespace BotWeb
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Path == "/ws")
+                {
+                    if (context.WebSockets.IsWebSocketRequest)
+                    {
+                        this.WebSocket = await context.WebSockets.AcceptWebSocketAsync();
+                        await Echo(context, this.WebSocket);
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = 400;
+                    }
+                }
+                else
+                {
+                    await next();
+                }
+            });
+        }
+
+        private async Task Echo(HttpContext context, WebSocket webSocket)
+        {
+            var buffer = new byte[1024 * 4];
+            WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+            while (!result.CloseStatus.HasValue)
+            {
+                await webSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
+
+                result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+            }
+            await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+        }
+
+        private async Task GameUpdate(object sender, GameFinishedEventArgs e)
+        {
+            if (this.WebSocket.State != WebSocketState.Open)
+                return;
+
+            var buffer = new byte[1024 * 4];
+            await this.WebSocket.SendAsync(new ArraySegment<byte>(Encoding.ASCII.GetBytes(e.Message), 0, e.Message.Length), WebSocketMessageType.Text, true, CancellationToken.None);
         }
     }
 }

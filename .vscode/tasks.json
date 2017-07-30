@@ -21,6 +21,16 @@
             ],
             "isBuildCommand": false,
             "problemMatcher": "$msCompile"
+        },
+        {
+            "taskName": "buildWebComponents",
+            "command": "webpack",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}/WebComponents"
+            },
+            "isBuildCommand": false,
+            "problemMatcher": "$tsc"
         }
     ]
 }

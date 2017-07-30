@@ -38,20 +38,20 @@ namespace LeagueBot.Commands.Modules
 
         // === Commands === //
 
-        [Command("say"), Summary("Echos a message.")]
-        public async Task Say([Remainder, Summary("The text to echo")] string echo)
-        {
-            this._stopwatch.Start();
+        // [Command("say"), Summary("Echos a message.")]
+        // public async Task Say([Remainder, Summary("The text to echo")] string echo)
+        // {
+        //     this._stopwatch.Start();
 
-            await this._riot.GetChampions();
-            var result = await this._riot.GetMatchesByAccount(207017735);
+        //     await this._riot.GetChampions();
+        //     var result = await this._riot.GetMatchesByAccount(207017735);
 
-            this._stopwatch.Stop();
+        //     this._stopwatch.Stop();
 
-            // BotLogger.Log($"Did this work: {result.TotalGames} - Time taken: {this._stopwatch.Elapsed}");
+        //     // BotLogger.Log($"Did this work: {result.TotalGames} - Time taken: {this._stopwatch.Elapsed}");
 
-            await ReplyAsync($"Something happened. You have played {result.TotalGames} games. This request took: {this._stopwatch.Elapsed}");
-        }
+        //     await ReplyAsync($"Something happened. You have played {result.TotalGames} games. This request took: {this._stopwatch.Elapsed}");
+        // }
 
         [Command("runtest"), Summary("Runs a test")]
         public async Task RunTest(string summId, string summName)

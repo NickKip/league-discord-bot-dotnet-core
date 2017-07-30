@@ -28,6 +28,17 @@ namespace LeagueBot.Services.Storage
             this._cache.Set("subs", subscriptions);
         }
 
+        public void SaveSingleSubscription(string key, Subscription sub)
+        {
+            Dictionary<string, Subscription> subs = this.GetAllSubs();
+
+            if (this.GetSubscriptionsFromKey(key) != null)
+            {
+                subs[key] = sub;
+                this.SaveSubscriptions(subs);
+            }
+        }
+
         public Dictionary<string, Subscription> GetAllSubs()
         {
             Dictionary<string, Subscription> subs;
@@ -75,6 +86,17 @@ namespace LeagueBot.Services.Storage
         public void SaveGames(Dictionary<string, LeagueStats> games)
         {
             this._cache.Set("games", games);
+        }
+
+        public void SaveSingleGame(string key, LeagueStats game)
+        {
+            Dictionary<string, LeagueStats> games = this.GetAllGames();
+
+            if (this.GetGamesFromKey(key) != null)
+            {
+                games[key] = game;
+                this.SaveGames(games);
+            }
         }
 
         public LeagueStats GetGamesFromKey(string key)
