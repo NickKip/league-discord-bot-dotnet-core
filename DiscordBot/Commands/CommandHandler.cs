@@ -36,7 +36,8 @@ namespace LeagueBot.Commands
                 .BuildServiceProvider();
 
             _client.MessageReceived += HandleCommand;
-            await _commands.AddModulesAsync(typeof(ModuleBase).GetTypeInfo().Assembly);
+            await this._commands.AddModuleAsync<Help>();
+            await this._commands.AddModuleAsync<Registration>();
 
             if (config.TestCommands == true)
                 await this._commands.AddModuleAsync<TestCommands>();
@@ -58,7 +59,7 @@ namespace LeagueBot.Commands
             var result = await _commands.ExecuteAsync(context, argPos, _services);
 
             if (!result.IsSuccess)
-                await context.Channel.SendMessageAsync(result.ErrorReason);
+                await context.Channel.SendMessageAsync($"😭 I don't recognise what you're asking. Type: `!help` to see what I can do.");
         }
     }
 }

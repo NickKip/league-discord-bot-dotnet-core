@@ -31,8 +31,8 @@ namespace LeagueBot.Commands.Modules
             this._riot = riotService;
             this._stopwatch = stopwatch;
             this._storage = storage;
-            this.Games = new Dictionary<string, LeagueStats>();
-            this.Subscriptions = new Dictionary<string, Subscription>();
+            this.Games = this._storage.GetAllGames();
+            this.Subscriptions = this._storage.GetAllSubscriptions();
         }
 
         // === Commands === //
@@ -60,13 +60,31 @@ namespace LeagueBot.Commands.Modules
                     // Persist
                     this._storage.SaveSubscriptions(this.Subscriptions);
 
-                    await ReplyAsync($"Summoner: `{summonerName}` has been successfully registered. You will now receive updates when you enter games!");
+                    await ReplyAsync($"😙 Summoner: `{summonerName}` has been successfully registered. You will now receive updates when you enter games!");
                 }
                 else
-                    await ReplyAsync($"Summoner: `{summonerName}` was not found. Please try again.");
+                    await ReplyAsync($"😢 Summoner: `{summonerName}` was not found. Please try again.");
             }
             else
-                await ReplyAsync($"You are already subscribed to summoner: `{summonerName}`.");
+                await ReplyAsync($"😁 You are already subscribed to summoner: `{summonerName}`.");
+        }
+
+        [Command("remove"), Summary("Removes your subscription.")]
+        public async Task Remove()
+        {
+            BotLogger.Log($"{Context.Message.Author.Username} requests subscription removal.");
+
+            Subscription subscription;
+
+            if (this.Subscriptions.TryGetValue(Context.Message.Author.Username, out subscription) == true)
+            {
+                this.Subscriptions.Remove(Context.Message.Author.Username);
+                this._storage.SaveSubscriptions(this.Subscriptions);
+
+                await ReplyAsync($"😭 Subscription to: `{subscription.SummonerName}` has been removed. You will no longer receive updates when entering games.");
+            }
+            else
+                await ReplyAsync($"😢 Cannot find a subscription.");
         }
     }
 }

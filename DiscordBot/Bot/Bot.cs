@@ -69,6 +69,7 @@ namespace LeagueBot.Bot
             await _client.LoginAsync(TokenType.Bot, Config.Token);
             await _client.StartAsync();
 
+            _client.MessageReceived += MessageReceived;
             _client.GuildMemberUpdated += UserUpdated;
 
             _client.Ready += () => {
@@ -88,7 +89,7 @@ namespace LeagueBot.Bot
 
         private async Task UserUpdated(SocketUser previousStatus, SocketUser currentStatus)
         {
-            BotLogger.Log($"User update!");
+            BotLogger.Log($"User update: {currentStatus.Username} - {currentStatus.Game.Value}!");
 
             if (currentStatus.Game != null) 
             {
@@ -113,6 +114,16 @@ namespace LeagueBot.Bot
                         BotLogger.Log("No subscription found.");
                     }
                 }
+            }
+        }
+
+        private async Task MessageReceived(SocketMessage message)
+        {
+            bool isCommand = message.Content.StartsWith("!");
+
+            if (message.Channel.Name.Contains("@") == true && !isCommand && message.Source.ToString() != "Bot")
+            {
+                await message.Channel.SendMessageAsync("Hello, I am LeagueBot. 🤖 I don't really talk, so to see what I can do, type: `!help`.");
             }
         }
     }

@@ -58,6 +58,18 @@ namespace LeagueBot.Services.Storage
             return null;
         }
 
+        public Dictionary<string, Subscription> GetAllSubscriptions()
+        {
+            Dictionary<string, Subscription> subs;
+
+            this._cache.TryGetValue("subs", out subs);
+
+            if (subs != null)
+                return subs;
+            else
+                return new Dictionary<string, Subscription>();
+        }
+
         // === Games === //
 
         public void SaveGames(Dictionary<string, LeagueStats> games)
@@ -81,6 +93,18 @@ namespace LeagueBot.Services.Storage
             }
 
             return null;
+        }
+
+        public Dictionary<string, LeagueStats> GetAllGames()
+        {
+            Dictionary<string, LeagueStats> games;
+
+            this._cache.TryGetValue("games", out games);
+
+            if (games != null)
+                return games;
+            else
+                return new Dictionary<string, LeagueStats>();
         }
     }
 }

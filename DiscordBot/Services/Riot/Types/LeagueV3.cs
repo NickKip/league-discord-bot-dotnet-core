@@ -10,7 +10,7 @@ namespace LeagueBot.Services.Riot.League
         GOLD = 3,
         PLATINUM = 4,
         DIAMOND = 5,
-        MASTERS = 6,
+        MASTER = 6,
         CHALLENGER = 7
     }
 

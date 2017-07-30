@@ -7,9 +7,19 @@
         {
             "taskName": "build",
             "args": [
-                "${workspaceRoot}/BotConsole/BotConsole.csproj"
+                "${workspaceRoot}"
             ],
             "isBuildCommand": true,
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "taskName": "buildWeb",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceRoot}/BotWeb/BotWeb.csproj"
+            ],
+            "isBuildCommand": false,
             "problemMatcher": "$msCompile"
         }
     ]

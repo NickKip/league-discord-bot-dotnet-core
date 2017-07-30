@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using LeagueBot.Config;
 using LeagueBot.Logger;
+using LeagueBot.Services.Riot.Featured;
 using LeagueBot.Services.Riot.League;
 using LeagueBot.Services.Riot.Matches;
 using LeagueBot.Services.Riot.Spectator;
@@ -27,6 +28,7 @@ namespace LeagueBot.Services.Riot
 
         private const string Protocol = "https://";
         private const string Champions = ".api.riotgames.com/lol/static-data/v3/champions";
+        private const string Featured = ".api.riotgames.com/lol/spectator/v3/featured-games";
         private const string LeagueV3 = ".api.riotgames.com/lol/league/v3/leagues/by-summoner/";
         private const string MatchV3ByAccount = ".api.riotgames.com/lol/match/v3/matchlists/by-account/";
         private const string MatchDtoById = ".api.riotgames.com/lol/match/v3/matches/";
@@ -98,6 +100,23 @@ namespace LeagueBot.Services.Riot
             {
                 BotLogger.Log(ex.ToString());
                 return default(Dictionary<int, string>);
+            }
+        }
+
+        public async Task<FeaturedGames> GetFeaturedGames()
+        {
+            try
+            {
+                string requestResult = await this.HttpRequest($"{Protocol}{Region}{Featured}");
+
+                FeaturedGames games = JsonConvert.DeserializeObject<FeaturedGames>(requestResult);
+
+                return games;
+            }
+            catch (Exception ex)
+            {
+                BotLogger.Log(ex.ToString());
+                return default(FeaturedGames);
             }
         }
 
