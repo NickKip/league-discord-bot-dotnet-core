@@ -8,8 +8,20 @@ namespace LeagueBot.Logger {
 
         public static void Log(string msg)
         {
-            if (BotConfig.Logging) 
+            if (BotConfig.Logging)
                 Console.WriteLine(msg);
+        }
+
+        public static void Info(string err)
+        {
+            if (BotConfig.Logging && BotConfig.LogLevel.Contains("info"))
+                Console.WriteLine(err);
+        }
+
+        public static void Error(string err)
+        {
+            if (BotConfig.Logging && BotConfig.LogLevel.Contains("error"))
+                Console.WriteLine(err);
         }
     }
 }

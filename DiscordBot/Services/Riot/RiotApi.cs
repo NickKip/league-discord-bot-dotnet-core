@@ -51,7 +51,7 @@ namespace LeagueBot.Services.Riot
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("X-Riot-Token", this.ApiKey);
 
-            BotLogger.Log($"Attempting Riot API Request: {uri}");
+            BotLogger.Info($"Attempting Riot API Request: {uri}");
 
             var response = await httpClient.GetAsync(uri);
 
@@ -75,7 +75,7 @@ namespace LeagueBot.Services.Riot
             }
             catch (Exception ex)
             {
-                BotLogger.Log(ex.ToString());
+                BotLogger.Error(ex.ToString());
                 return default(SummonerAccount);
             }
         }
@@ -98,7 +98,7 @@ namespace LeagueBot.Services.Riot
             }
             catch (Exception ex)
             {
-                BotLogger.Log(ex.ToString());
+                BotLogger.Error(ex.ToString());
                 return default(Dictionary<int, string>);
             }
         }
@@ -115,7 +115,7 @@ namespace LeagueBot.Services.Riot
             }
             catch (Exception ex)
             {
-                BotLogger.Log(ex.ToString());
+                BotLogger.Error(ex.ToString());
                 return default(FeaturedGames);
             }
         }
@@ -132,7 +132,7 @@ namespace LeagueBot.Services.Riot
             }
             catch (Exception ex)
             {
-                BotLogger.Log(ex.ToString());
+                BotLogger.Error(ex.ToString());
                 return default(MatchList);
             }
         }
@@ -154,7 +154,8 @@ namespace LeagueBot.Services.Riot
             }
             catch (Exception ex)
             {
-                BotLogger.Log(ex.ToString());
+                BotLogger.Log($"😕 Couldn't find any matches for: {accountId} with params: Queue {queue}, Season {season} & Champion {championId}");
+                BotLogger.Error(ex.ToString());
                 return default(MatchList);
             }
         }
@@ -171,7 +172,7 @@ namespace LeagueBot.Services.Riot
             }
             catch (Exception ex)
             {
-                BotLogger.Log(ex.ToString());
+                BotLogger.Error(ex.ToString());
                 return default(SpectatorV3);
             }
         }
@@ -188,7 +189,8 @@ namespace LeagueBot.Services.Riot
             }
             catch (Exception ex)
             {
-                BotLogger.Log(ex.ToString());
+                BotLogger.Log($"😕 Couldn't find any league info for: {summonerId}.");
+                BotLogger.Error(ex.ToString());
                 return default(IEnumerable<LeagueListDTO>);
             }
         }

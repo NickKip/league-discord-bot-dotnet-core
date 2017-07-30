@@ -3,6 +3,7 @@
         "Token": "",
         "Version": "0.0.1",
         "Logging": true,
+        "LogLevel": "",
         "TestCommands": true,
 
         "RiotKey": "",

@@ -7,6 +7,7 @@ using LeagueBot.Config;
 using LeagueBot.Entities.LeagueGame;
 using LeagueBot.Logger;
 using LeagueBot.Services.Riot;
+using LeagueBot.Services.Riot.Featured;
 using LeagueBot.Services.Riot.League;
 using LeagueBot.Services.Riot.Matches;
 using LeagueBot.Services.Riot.Participant;
@@ -32,6 +33,25 @@ namespace LeagueBot.Services.LiveGame
         }
 
         // === Public Methods === //
+
+        public async Task<LeagueGame> Preview()
+        {
+            FeaturedGames games = await this._riot.GetFeaturedGames();
+
+            if (games == null)
+                return null;
+
+            string summName = games.GameList.FirstOrDefault().Participants.FirstOrDefault().SummonerName;
+
+            SummonerAccount acc = await this._riot.GetSummonerByName(summName);
+
+            if (acc == null)
+                return null;
+
+            LeagueGame game = await this.GetCurrentGame(acc.Id, acc.Name);
+
+            return game;
+        }
 
         public async Task<LeagueGame> GetCurrentGame(long summonerId, string summonerName)
         {
@@ -87,6 +107,10 @@ namespace LeagueBot.Services.LiveGame
                     }
                     else
                     {
+                        string summLeagues = string.Join(",", leagues.Select<LeagueListDTO, string>(x => x.Queue).ToArray());
+
+                        BotLogger.Log($"🤔 No ranked solo queue found for: {s.Name} ({s.Champion}). Leagues found: {summLeagues}");
+
                         s.Rank = "UNRANKED";
                         s.Tier = (int)LeagueTiers.UNRANKED;
                         s.Wins = 0;

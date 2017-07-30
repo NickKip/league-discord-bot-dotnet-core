@@ -8,6 +8,7 @@ namespace LeagueBot.Config
         public string Version { get; set; }
         public string Token { get; set; }
         public bool Logging { get; set; }
+        public string LogLevel { get; set; }
         public bool TestCommands { get; set; }
 
         // === League Config === //
