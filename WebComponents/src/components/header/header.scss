@@ -1,7 +1,17 @@
 :host {
-
-    display: flex;
-    height: 200px;
-    width: 400px;
-    background-color: red;
+    display: block;
+    width: 100vw;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.8);
 }
+
+    :host div {
+        display: flex;
+        height: 100%;
+    }
+
+    :host h1 {
+        color: white;
+        font-size: 18px;
+        margin: auto;
+    }

@@ -7,33 +7,14 @@ export class Header extends BaseComponent {
         return "bot-header";
     }
 
+    async _init(): Promise<void> {}
     _setupEventListeners(): void {}
 
     componentStyles(): JSXElement {
 
-        const styles: string = `
-            :host {
-                display: block;
-                width: 100vw;
-                height: 40px;
-                background-color: rgba(0, 0, 0, 0.8);
-            }
-
-            :host div {
-                display: flex;
-                height: 100%;
-            }
-
-            :host h1 {
-                color: white;
-                font-size: 18px;
-                margin: auto;
-            }
-        `;
-
         return (
             <style>
-                { styles }
+                { require("./header.scss") }
             </style>
         );
     }

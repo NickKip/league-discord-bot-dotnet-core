@@ -7,6 +7,7 @@ export class Title extends BaseComponent {
         return "bot-title";
     }
 
+    async _init(): Promise<void> {}
     _setupEventListeners(): void {}
 
     componentStyles(): JSXElement {

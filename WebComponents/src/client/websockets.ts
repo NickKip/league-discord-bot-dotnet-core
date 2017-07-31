@@ -1,4 +1,5 @@
 import { ClientManager } from "client/clientManager";
+import { ClientEvents } from "events";
 
 export class BotWebSocketHandler {
 
@@ -43,14 +44,11 @@ export class BotWebSocketHandler {
         console.log("Websocket error: ", event);
     }
 
-    private onMessage(event: Event): void {
+    private onMessage(event: MessageEvent): void {
 
         // tslint:disable-next-line no-console
         console.log("Websocket message: ", event);
 
-        // Todo: create type defs for event data
-
-        // tslint:disable-next-line no-any
-        this.manager.emit("new-ws-event", (<any>event).data);
+        this.manager.emit(ClientEvents.NewWsMessage, event.data);
     }
 }

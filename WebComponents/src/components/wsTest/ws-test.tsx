@@ -1,21 +1,31 @@
 import { BaseComponent } from "components/base/BaseComponent";
+import { prop } from "components/base/decorators/prop";
 import { JSXElement } from "components/base";
+import { ClientEvents } from "events";
 
 export class WSTest extends BaseComponent {
+
+    @prop({ type: Array, attribute: false, default: [] })
+    private messages: string[];
 
     static get is(): string {
         return "bot-wstest";
     }
 
-    _setupEventListeners(): void {
+    async _init(): Promise<void> {
 
-        this.manager.on("new-ws-event", (d => this.newWs(d)));
+        this.messages = await this.manager.store.getFromState<string[]>("messages");
     }
 
-    private newWs(d: string): void {
+    _setupEventListeners(): void {
 
-        // temp
-        alert(d);
+        this.manager.on(ClientEvents.NewWsMessage, (msg => this.newWs(msg)));
+    }
+
+    private async newWs(msg: string): Promise<void> {
+
+        await this.manager.store.saveMessage(msg);
+        this.messages = await this.manager.store.getFromState<string[]>("messages");
     }
 
     componentStyles(): JSXElement {
@@ -34,7 +44,9 @@ export class WSTest extends BaseComponent {
 
         return (
             <div>
-                <h1>Title</h1>
+                {
+                    this.messages.map(x => <p>{ x }</p>)
+                }
             </div>
         );
     }

@@ -1,3 +1,6 @@
+import { Store } from "store/store";
+import { ClientEvents } from "events";
+
 export class ClientManager {
 
     // === Static === //
@@ -9,6 +12,11 @@ export class ClientManager {
         return ClientManager.Registrations.get(name);
     }
 
+    static FireReady(): void {
+
+        document.dispatchEvent(new CustomEvent(ClientEvents.ClientManagerReady));
+    }
+
     // === Private === //
 
     private name: string;
@@ -16,12 +24,41 @@ export class ClientManager {
     // Todo: proper type defs
     private events: { [key: string]: Function[] } = {};
 
+    // === Public === //
+
+    public isReady: boolean = false;
+    public store: Store;
+
     // === Constructor === //
 
     constructor(name: string) {
 
         this.name = name;
         ClientManager.Registrations.set(this.name, this);
+
+        const store: Store = new Store(this.name);
+
+        this.bootstrap(store);
+    }
+
+    private bootstrap(store: Store): Promise<void> {
+
+        return Promise.resolve()
+            .then(() => this._setStore(store))
+            .then(() => {
+
+                this.isReady = true;
+                ClientManager.FireReady();
+            });
+    }
+
+    private _setStore(store: Store): Promise<void> {
+
+        return new Promise<void>(resolve => {
+
+            this.store = store;
+            this.store.init().then(() => resolve());
+        });
     }
 
     // === Events === //
@@ -56,3 +93,4 @@ export class ClientManager {
 }
 
 window.ClientManager = ClientManager;
+window.NKTemp = new ClientManager("nktemp");

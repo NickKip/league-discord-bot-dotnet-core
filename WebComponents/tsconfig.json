@@ -22,7 +22,8 @@
     "types": [
       "skatejs"
     ],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "preserveConstEnums": true
   },
   "awesomeTypescriptLoaderOptions": {
     "silent": true

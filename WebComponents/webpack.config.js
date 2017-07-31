@@ -26,7 +26,7 @@ module.exports = {
     module: {
         rules: [
             // All files with a '.scss' extension will be handled by our scss loader
-            // { test: /\.scss$/, use: [{ loader: "style-loader"}, { loader: "css-loader" }, { loader: "sass-loader"}] },
+            { test: /\.scss$/, use: [{ loader: "css-to-string-loader" }, { loader: "css-loader" }, { loader: "sass-loader"}] },
 
             // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
             { test: /\.tsx?$/, loader: "awesome-typescript-loader" },
@@ -45,6 +45,7 @@ module.exports = {
     // This is important because it allows us to avoid bundling all of our
     // dependencies, which allows browsers to cache those libraries between builds.
     externals: {
-        "skatejs/src/index": "skate"
+        "skatejs/src/index": "skate",
+        "pouchdb": "pouchdb"
     }
 };

@@ -1,6 +1,7 @@
 import * as skate from "skatejs/src/index";
 import { JSXElement } from "components/base";
 import { ClientManager } from "client/clientManager";
+import { ClientEvents } from "events";
 
 // tslint:disable typedef
 // tslint:disable no-any
@@ -18,6 +19,8 @@ export abstract class BaseComponent extends skate.Component<any> {
     styleElements: JSXElement;
 
     // === Render lifecycle events === //
+
+    abstract async _init(): Promise<void>;
 
     abstract _setupEventListeners(): void;
 
@@ -43,30 +46,39 @@ export abstract class BaseComponent extends skate.Component<any> {
         }
     }
 
-    connectedCallback(): void {
+    // === Private === //
 
-        super.connectedCallback();
-
-        // Hack
-        const manager: ClientManager = ClientManager.GetRegistration(this.managerName);
-
-        if (!manager) {
-
-            window.NKTemp = new ClientManager("nktemp");
-        }
+    private async _bindManager(ev: Event): Promise<void> {
 
         this.manager = ClientManager.GetRegistration(this.managerName);
 
         this._setupEventListeners();
+        await this._init();
+    }
+
+    // === Lifecycle Events === //
+
+    connectedCallback(): void {
+
+        super.connectedCallback();
+
+        const manager: ClientManager = ClientManager.GetRegistration(this.managerName);
+
+        if (!manager || !manager.isReady) {
+
+            document.addEventListener(ClientEvents.ClientManagerReady, (ev) => this._bindManager(ev));
+        }
+        else {
+
+            this.manager = manager;
+            this._setupEventListeners();
+            Promise.resolve().then(async () => await this._init());
+        }
     }
 
     // === Render function === //
 
     renderCallback(): any[] {
-
-        // const styles: Array<JSXElement> = ensureArray(
-        //     this.styleElements || []
-        // );
 
         const styles: JSXElement[] = ensureArray(this.componentStyles());
 
