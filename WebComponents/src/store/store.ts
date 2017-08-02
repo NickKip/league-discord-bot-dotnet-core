@@ -1,4 +1,5 @@
 import { State } from "store/state";
+import { LeagueGame, LeagueGameWeb } from "models/LegaueGame";
 
 type PouchResponse = {
 
@@ -42,6 +43,12 @@ export class Store {
     public async saveMessage(message: string): Promise<void> {
 
         this.state.messages = [ message, ...this.state.messages ];
+        return await this._saveToPersistent();
+    }
+
+    public async saveLeagueGame(game: LeagueGameWeb): Promise<void> {
+
+        this.state.leagueGames = [ game, ...this.state.leagueGames ];
         return await this._saveToPersistent();
     }
 

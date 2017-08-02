@@ -77,7 +77,8 @@ namespace LeagueBot.Services.LiveGame
                         Rank = "",
                         Wins = 0,
                         Losses = 0,
-                        IsRegisteredUser = p.SummonerId == summonerId
+                        IsRegisteredUser = p.SummonerId == summonerId,
+                        Participant = p
                     };
 
                     return summ;

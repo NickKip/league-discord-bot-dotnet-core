@@ -39,7 +39,7 @@ namespace LeagueBot.Bot
         {
             this.ReadConfig(env);
             this._liveService = new LiveGameService(this.Config);
-            this._storage = new StorageService();;
+            this._storage = new StorageService();
         }
 
         // === Public Methods === //
@@ -125,6 +125,9 @@ namespace LeagueBot.Bot
 
                             var channel = await currentStatus.CreateDMChannelAsync();
                             await channel.SendMessageAsync(this._formatter.FormatGameResponse(game));
+
+                            // Emit event
+                            await OnGameFinished(new GameFinishedEventArgs(game));
                         }
                     }
                     else
@@ -145,6 +148,8 @@ namespace LeagueBot.Bot
                         LeagueGame finishedGame = stats.Games.LastOrDefault(x => x.IsFinished == false);
                         finishedGame.IsFinished = true;
 
+                        // Todo: work out who won
+
                         // Emit event
                         await OnGameFinished(new GameFinishedEventArgs(finishedGame));
                     }
@@ -162,8 +167,10 @@ namespace LeagueBot.Bot
 
                 if (message.Channel.Name.Contains("NKRange") == true)
                 {
+                    LeagueGame game = await this._liveService.Preview();
+
                     // Test which will echo what we send to the bot
-                    await OnGameFinished(new GameFinishedEventArgs(null, message.Content));
+                    await OnGameFinished(new GameFinishedEventArgs(game));
                 }
             }
         }

@@ -1,5 +1,7 @@
 import { ClientManager } from "client/clientManager";
 import { ClientEvents } from "events";
+import { LeagueGame } from "models/LegaueGame";
+import { sortGameInfo } from "client/utils";
 
 export class BotWebSocketHandler {
 
@@ -49,6 +51,8 @@ export class BotWebSocketHandler {
         // tslint:disable-next-line no-console
         console.log("Websocket message: ", event);
 
-        this.manager.emit(ClientEvents.NewWsMessage, event.data);
+        const game: LeagueGame = JSON.parse(event.data);
+
+        this.manager.emit(ClientEvents.NewLeagueGame, sortGameInfo(game));
     }
 }

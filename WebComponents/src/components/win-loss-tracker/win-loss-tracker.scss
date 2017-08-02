@@ -1,0 +1,40 @@
+:host {
+
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .headings {
+
+        display: flex;
+        width: 50vw;
+        margin: auto;
+        justify-content: space-between;
+    }
+
+    .results {
+
+        display: flex;
+        width: 80vw;
+        margin: auto;
+        font-size: 180px;
+        justify-content: space-between;
+
+        p {
+            margin: 0;
+
+            &.sep {
+                font-size: 60px;
+                margin: auto;
+            }
+
+            &.wins {
+                color: green;
+            }
+
+            &.losses {
+                color: red;
+            }
+        }
+    }
+}

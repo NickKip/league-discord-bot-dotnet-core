@@ -1,9 +1,9 @@
-import { LeagueGame } from "models/LegaueGame";
+import { LeagueGame, LeagueGameWeb } from "models/LegaueGame";
 
 export interface State {
 
     _id?: string;
     _rev?: string;
-    leagueGames: LeagueGame[];
+    leagueGames: LeagueGameWeb[];
     messages: string[];
 }

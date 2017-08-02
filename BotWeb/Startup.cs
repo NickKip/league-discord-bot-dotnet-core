@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-
+using Newtonsoft.Json;
 
 namespace BotWeb
 {
@@ -81,6 +81,8 @@ namespace BotWeb
                     {
                         this.WebSocket = await context.WebSockets.AcceptWebSocketAsync();
                         await Echo(context, this.WebSocket);
+
+                        await next();
                     }
                     else
                     {
@@ -113,7 +115,9 @@ namespace BotWeb
                 return;
 
             var buffer = new byte[1024 * 4];
-            await this.WebSocket.SendAsync(new ArraySegment<byte>(Encoding.ASCII.GetBytes(e.Message), 0, e.Message.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+            string payload = JsonConvert.SerializeObject(e.Game);
+
+            await this.WebSocket.SendAsync(new ArraySegment<byte>(Encoding.ASCII.GetBytes(payload), 0, payload.Length), WebSocketMessageType.Text, true, CancellationToken.None);
         }
     }
 }

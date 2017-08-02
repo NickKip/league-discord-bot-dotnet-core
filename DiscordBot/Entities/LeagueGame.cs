@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using LeagueBot.Services.Riot.Participant;
 
 namespace LeagueBot.Entities.LeagueGame
 {
@@ -32,5 +33,6 @@ namespace LeagueBot.Entities.LeagueGame
         public int                              Losses              { get; set; }
         public bool                             IsRegisteredUser    { get; set; }
         public int                              ChampGamesPlayed    { get; set; }
+        public CurrentGameParticipant           Participant         { get; set; }
     }
 }

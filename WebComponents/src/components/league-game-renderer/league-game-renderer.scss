@@ -1,0 +1,48 @@
+:host {
+
+    display: flex;
+    box-sizing: border-box;
+
+    div {
+        box-sizing: border-box;
+    }
+
+    .summTable {
+
+        display: table;
+        width: 80vw;
+        margin: 0 auto;
+
+        .summRow {
+
+            display: flex;
+            border: 1px solid #ccc;
+
+            &.header {
+                span {
+                    margin: auto;
+                }
+            }
+
+            .blue,
+            .red {
+                font-size: 14px;
+                padding: 10px;
+                display: flex;
+                flex: 0 0 50%;
+
+                div {
+                    margin: auto 10px;
+
+                    p {
+                        margin: auto 0;
+                    }
+                }
+            }
+
+            .blue {
+                border-right: 1px solid #ccc;
+            }
+        }
+    }
+}
